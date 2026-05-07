@@ -29,7 +29,6 @@ def add_expense(amount, category, description):
         print("Amount must be greater than 0")
         return False
 
-    # Validate category (case-insensitive)
     category_clean = category.capitalize()
     if category_clean not in VALID_CATEGORIES:
         print(f"Invalid category. Choose from: {', '.join(VALID_CATEGORIES)}")
