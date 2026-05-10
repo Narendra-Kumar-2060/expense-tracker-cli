@@ -22,7 +22,7 @@ A command-line expense tracking application built with Python and SQLite. Track 
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/expense-tracker.git
+git clone https://github.com/Narendra-Kumar-2060/expense-tracker.git
 cd expense-tracker
 
 # No external dependencies required (uses only Python standard library)
