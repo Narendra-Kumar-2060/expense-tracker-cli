@@ -13,18 +13,19 @@ VALID_CATEGORIES = [
     "Health",
     "Other",
 ]
+VALID_METHOD = ["upi", "cash"]
 
 
 def setup():
     con = sqlite3.connect(DB_PATH)
     cur = con.cursor()
-    sql = "CREATE TABLE IF NOT EXISTS expenses (id INTEGER PRIMARY KEY, date TEXT, time TEXT, amount REAL NOT NULL, category TEXT, description TEXT)"
+    sql = "CREATE TABLE IF NOT EXISTS expenses (id INTEGER PRIMARY KEY, date TEXT, time TEXT, amount REAL NOT NULL, category TEXT, description TEXT,payment_method TEXT,transaction_type TEXT)"
     cur.execute(sql)
     con.commit()
     con.close()
 
 
-def add_expense(amount, category, description):
+def add_expense(amount, category, description, payment_method="cash"):
     if amount <= 0:
         print("Amount must be greater than 0")
         return False
@@ -35,16 +36,71 @@ def add_expense(amount, category, description):
         return False
     category = category_clean
 
+    payment_method_lower = payment_method.lower()
+    if payment_method_lower not in VALID_METHOD:
+        print(f"Invalid payment method. Choose from: {', '.join(VALID_METHOD)}")
+        return False
+    payment_method = payment_method_lower
+
     now = datetime.now()
     current_date = now.strftime("%Y-%m-%d")
     current_time = now.strftime("%H:%M")
     con = sqlite3.connect(DB_PATH)
     cur = con.cursor()
-    sql = "INSERT INTO expenses (date, time, amount, category, description) VALUES (?, ?, ?, ?, ?)"
-    cur.execute(sql, (current_date, current_time, amount, category, description))
+    sql = "INSERT INTO expenses (date, time, amount, category, description, payment_method, transaction_type) VALUES (?, ?, ?, ?, ?, ?, ?)"
+    cur.execute(
+        sql,
+        (
+            current_date,
+            current_time,
+            amount,
+            category,
+            description,
+            payment_method,
+            "expense",
+        ),
+    )
     con.commit()
     con.close()
     print("Expense added!")
+    return True
+
+
+def add_income(amount, source, description, payment_method="cash"):
+    if amount <= 0:
+        print("Amount must be greater than 0")
+        return False
+
+    payment_method_lower = payment_method.lower()
+    if payment_method_lower not in VALID_METHOD:
+        print(f"Invalid payment method. Choose from: {', '.join(VALID_METHOD)}")
+        return False
+    payment_method = payment_method_lower
+
+    now = datetime.now()
+    current_date = now.strftime("%Y-%m-%d")
+    current_time = now.strftime("%H:%M")
+
+    con = sqlite3.connect(DB_PATH)
+    cur = con.cursor()
+
+    sql = "INSERT INTO expenses (date, time, amount, category, description, payment_method, transaction_type) VALUES (?, ?, ?, ?, ?, ?, ?)"
+    cur.execute(
+        sql,
+        (
+            current_date,
+            current_time,
+            amount,
+            source,
+            description,
+            payment_method,
+            "income",
+        ),
+    )
+
+    con.commit()
+    con.close()
+    print("Income added!")
     return True
 
 
